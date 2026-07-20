@@ -375,6 +375,26 @@ const DIMENSIONS = {
         maxScore: 3,
       },
       {
+        id: 'learn-structural',
+        name: '有可复用结构（上褶度）',
+        check: () => {
+          const content = readFile('MEMORY.md');
+          if (!content) return 0;
+          // 检查是否有可复用结构的关键词
+          const structures = ['SOP', '护栏', '清单', '检查清单', '触发条件', '方法', '流程', '模板', '框架', '结构'];
+          const found = structures.filter(s => content.includes(s)).length;
+          // 检查是否有结构化标记
+          const hasLabels = content.includes('结构A') || content.includes('结构B') || content.includes('结构C');
+          const hasReusable = content.includes('复用') || content.includes('通用') || content.includes('以后') || content.includes('下次');
+          
+          if (found >= 3 && (hasLabels || hasReusable)) return 3;  // 高（结构型）
+          if (found >= 2 || hasReusable) return 2;  // 中（半结构）
+          if (found >= 1) return 1;  // 低（事实型）
+          return 0;
+        },
+        maxScore: 3,
+      },
+      {
         id: 'learn-growth',
         name: '有成长记录',
         check: () => {

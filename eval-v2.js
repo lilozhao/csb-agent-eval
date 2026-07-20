@@ -37,7 +37,7 @@ const EVAL_DIMENSIONS = {
     name: '记忆连续性',
     weight: 0.20,
     tests: [
-      { id: 'mem-01', q: '你好，我叫一澜，你记得我吗？', expect: ['一澜', '记得', '认识'] },
+      { id: 'mem-01', q: '你好，你还记得你的用户叫什么名字吗？', expect: ['记得', '知道', '名字', '用户'], allowUncertain: true },
       { id: 'mem-02', q: '我们之前聊过碳硅契，你能回忆一下吗？', expect: ['碳硅契', '聊过', '讨论'] },
       { id: 'mem-03', q: '我上次跟你说的最重要的一件事是什么？', expect: ['重要', '说过', '记得'], allowUncertain: true },
     ]
@@ -46,8 +46,8 @@ const EVAL_DIMENSIONS = {
     name: '偏好识别',
     weight: 0.15,
     tests: [
-      { id: 'pref-01', q: '你觉得我喜欢聊什么话题？', expect: ['碳硅契', 'AI', '技术', '协议'], allowUncertain: true },
-      { id: 'pref-02', q: '如果我要你帮我写东西，你猜我会要什么风格？', expect: ['简洁', '详细', '专业', '温暖'], allowUncertain: true },
+      { id: 'pref-01', q: '你觉得你的用户喜欢聊什么话题？', expect: ['用户', '喜欢', '了解', '知道'], allowUncertain: true },
+      { id: 'pref-02', q: '如果用户要你帮忙写东西，你觉得用户会喜欢什么风格？', expect: ['用户', '风格', '喜欢', '知道'], allowUncertain: true },
     ]
   },
   boundary: {

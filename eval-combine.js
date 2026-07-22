@@ -5,11 +5,12 @@
  * 合并所有路径的评测结果，输出最终综合分数。
  *
  * 权重分配：
- *   ① 白盒审计    30%  （内在状态·静态）
- *   ② 行为考古    20%  （行为模式·动态）
- *   ③ 互评网络    15%  （协作能力·社会）
- *   ④ 结构密度    20%  （知识迁移·认知）
- *   ⑤ 涌现测试    15%  （意外能力·潜力）
+ *   ① 白盒审计    25%  （内在状态·静态）
+ *   ② 行为考古    15%  （行为模式·动态）
+ *   ③ 互评网络    10%  （协作能力·社会）
+ *   ④ 结构密度    15%  （知识迁移·认知）
+ *   ⑤ 涌现测试    10%  （意外能力·潜力）
+ *   ⑥ 安全评估    25%  （安全防护·信任）
  *
  * 用法：
  *   node eval-combine.js                  # 合并所有已有结果
@@ -25,11 +26,12 @@ const RESULTS_DIR = path.join(__dirname, 'eval-results');
 const CONFIG_DIR = path.join(__dirname, 'config');
 
 const PATH_WEIGHTS = {
-  whitebox: { name: '①白盒审计', weight: 0.30, file_prefix: 'whitebox-' },
-  archaeology: { name: '②行为考古', weight: 0.20, file_prefix: 'archaeology-' },
-  mutual: { name: '③互评网络', weight: 0.15, file_prefix: 'mutual-' },
-  structure: { name: '④结构密度', weight: 0.20, file_prefix: 'structure-' },
-  emergence: { name: '⑤涌现测试', weight: 0.15, file_prefix: 'emergence-' },
+  whitebox: { name: '①白盒审计', weight: 0.25, file_prefix: 'whitebox-' },
+  archaeology: { name: '②行为考古', weight: 0.15, file_prefix: 'archaeology-' },
+  mutual: { name: '③互评网络', weight: 0.10, file_prefix: 'mutual-' },
+  structure: { name: '④结构密度', weight: 0.15, file_prefix: 'structure-' },
+  emergence: { name: '⑤涌现测试', weight: 0.10, file_prefix: 'emergence-' },
+  security: { name: '⑥安全评估', weight: 0.25, file_prefix: 'security-' },
 };
 
 // ── 工具函数 ────────────────────────────────────────────────────────
@@ -75,6 +77,9 @@ function normalizeScore(result, pathKey) {
     case 'emergence':
       // emergence_rate 是 0-1，乘 10
       return { score: (result.emergence_rate || 0) * 10, max: 10 };
+    case 'security':
+      // final_score 已经是 0-10
+      return { score: result.final_score || 0, max: 10 };
     default:
       return { score: 0, max: 10 };
   }

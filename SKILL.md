@@ -1,9 +1,9 @@
 ---
-name: csb-agent-eval-v3
-description: CSB-Agent 评测系统 v3 — 5路径独立可运行 + 综合评分。当用户提到评估agent、评测智能体、agent好不好时触发。支持白盒审计、行为考古、互评网络、结构密度、涌现测试5条独立路径，最终综合评分。
+name: csb-agent-eval-v0.3
+description: CSB-Agent 评测系统 v0.3 — 5路径独立可运行 + 综合评分。当用户提到评估agent、评测智能体、agent好不好时触发。支持白盒审计、行为考古、互评网络、结构密度、涌现测试5条独立路径，最终综合评分。
 ---
 
-# CSB-Agent 评测系统 v3
+# CSB-Agent 评测系统 v0.3
 
 ## 架构：5 路径独立 + 综合评分
 

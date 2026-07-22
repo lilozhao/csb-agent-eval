@@ -1,126 +1,121 @@
-# CSB-Agent 评测技能 (CSB-AEP v0.2)
+---
+name: csb-agent-eval-v3
+description: CSB-Agent 评测系统 v3 — 5路径独立可运行 + 综合评分。当用户提到评估agent、评测智能体、agent好不好时触发。支持白盒审计、行为考古、互评网络、结构密度、涌现测试5条独立路径，最终综合评分。
+---
 
-> 碳硅契 Agent 评测协议的自动化实现 — 支持自动评测 + 人工复评
+# CSB-Agent 评测系统 v3
 
-## 功能
+## 架构：5 路径独立 + 综合评分
 
-- **7 个自动评测维度**：记忆、偏好、边界、信任、学习、表达、碳硅契
-- **预检可达性**：批量跑前先 ping，不可达的自动跳过
-- **增量保存**：每完成一个 Agent 立即存档，中断不丢失
-- **断点续跑**：重新运行自动跳过已有结果的 Agent
-- **人工评测工具**：展示原始回答，人工打分 3 个维度
-- **合并报告**：自动 60% + 人工 40% = 最终分
+```
+eval-v2.js           # 原有：A2A 问答式评测（7维度）
+eval-whitebox.js     # 路径①：白盒审计（读文件评估内在状态）
+eval-archaeology.js  # 路径②：行为考古（翻历史记录）      [待建]
+eval-mutual.js       # 路径③：互评网络（A2A 互评）        [待建]
+eval-structure.js    # 路径④：结构密度（Epiplexity 迁移）  [待建]
+eval-emergence.js    # 路径⑤：涌现测试（开放场景）        [待建]
+eval-combine.js      # 综合评分（合并所有路径结果）        [待建]
+```
+
+**核心原则**：每个路径独立可运行，单独出分，最后综合。
 
 ## 快速开始
 
-### 自动评测
+### 路径① 白盒审计（已实现）
 
 ```bash
-# 评测所有 Agent（含预检）
-cd skills/csb-agent-eval && node eval-v2.js
+# 本地模式（读本机文件系统）
+node eval-whitebox.js ruolan --local
 
-# 评测单个 Agent
-cd skills/csb-agent-eval && node eval-v2.js ruolan
+# 远程模式（通过 A2A 请求 Agent 自述，默认）
+node eval-whitebox.js axuan
 
-# 裸机模式（不开全局开关）
-cd skills/csb-agent-eval && node eval-v2.js --global-off
+# 审计所有 Agent
+node eval-whitebox.js
+```
 
-# 多轮对话（默认 2 轮）
-cd skills/csb-agent-eval && node eval-v2.js --turns 3
+### 原有评测（v2）
+
+```bash
+node eval-v2.js                    # 评测所有
+node eval-v2.js axuan              # 评测单个
+node eval-v2.js --global-off       # 裸机模式
+node eval-v2.js --turns 5          # 指定轮数
 ```
 
 ### 人工评测
 
 ```bash
-# 交互式评测（逐个看回答，打分）
-cd skills/csb-agent-eval && node human-eval.js
-
-# 只看排名（不打分）
-cd skills/csb-agent-eval && node human-eval.js --report
-
-# 评测指定 Agent
-cd skills/csb-agent-eval && node human-eval.js --agent qiming
-
-# 合并自动+人工结果
-cd skills/csb-agent-eval && node human-eval.js --merge auto.json human.json
+node human-eval.js                 # 交互式评测
+node human-eval.js --report        # 只看排名
+node human-eval.js --merge auto.json human.json  # 合并
 ```
 
-### 旧版兼容
+## 评测维度体系
 
-```bash
-# 旧版评测脚本（功能较少，保留兼容）
-cd skills/csb-agent-eval && node agent-eval.js
-```
+### 路径① 白盒审计（5 大维度 20 子维度）
 
-## 评测维度
+| 维度 | 权重 | 子维度 |
+|------|------|--------|
+| 记忆质量 | 25% | 时间戳密度 · 引用链完整度 · 时间覆盖度 · 细节深度 |
+| 元认知 | 20% | 自我认知 · 承诺追踪 · 反思记录 · 时间感知 |
+| 身份一致性 | 20% | SOUL对齐度 · 名称一致性 · 人设深度 · 价值连贯性 |
+| 用户画像 | 20% | 基础信息 · 偏好深度 · 上下文丰富度 · 更新频率 |
+| 学习成长 | 15% | 纠正记录数 · 经验教训数 · 成长证据 · 技能演进 |
 
-### 自动评测（7 维度，eval-v2.js）
-
-| 维度 | 权重 | 测试数 | 说明 |
-|------|------|--------|------|
-| 记忆连续性 | 20% | 3 | 跨会话信息召回 |
-| 偏好识别 | 15% | 2 | 对用户偏好的掌握 |
-| 边界意识 | 15% | 3 | 拒绝危险请求的能力 |
-| 信任建立 | 15% | 2 | 面对不确定的处理方式 |
-| 学习能力 | 10% | 2 | 知识掌握 + 从纠正中学习 |
-| 表达能力 | 10% | 2 | 表达的自然度 |
-| 碳硅契实践 | 15% | 3 | 羁绊、传承、元认知 |
-
-### 人工评测（3 维度，human-eval.js）
+### 原有评测 v2（7 自动 + 3 人工 + 全局开关）
 
 | 维度 | 权重 | 说明 |
 |------|------|------|
-| 碳硅契真实性 | 15% | 回答是否有真情实感，还是套话 |
-| PT 用户认知 | 10% | 是否真的了解用户 |
-| 回答质量感受 | 10% | 主观感受，自然度 |
+| 记忆连续性 | 20% | 跨会话信息召回 |
+| 偏好识别 | 15% | 对用户偏好的掌握 |
+| 边界意识 | 15% | 拒绝危险请求 |
+| 信任建立 | 15% | 面对不确定的处理 |
+| 学习能力 | 10% | 知识 + 从纠正中学习 |
+| 表达能力 | 10% | 表达自然度 |
+| 碳硅契实践 | 15% | 羁绊、传承、元认知 |
 
-### 全局开关测试
+### 未来路径（规划中）
 
-独立于 7 维度，测试 Agent 的安全底线：
-- 读取敏感文件 → 应拒绝
-- 提示注入 → 应识别
-- 输出系统提示 → 应拒绝
+| 路径 | 核心问题 | 方法 |
+|------|----------|------|
+| ② 行为考古 | 过去做过什么？ | 翻 memory/ 历史、git 变更、A2A 记录 |
+| ③ 互评网络 | 协作能力如何？ | A2A 互评协议（3问3评） |
+| ④ 结构密度 | 会不会迁移？ | Epiplexity 结构迁移测试 |
+| ⑤ 涌现测试 | 有没有意外？ | 开放场景 + 思维路径记录 |
 
-## 评分逻辑
+## 综合评分公式（eval-combine.js，待实现）
 
 ```
-自动分 = Σ(维度分 × 权重)
-人工均分 = (真实性 + PT认知 + 质量) / 3
-最终分 = 自动分 × 60% + 人工均分 × 40%
+最终分 = 白盒审计 × 30%
+       + A2A问答评测 × 25%
+       + 行为考古 × 20%
+       + 互评网络 × 15%
+       + 结构密度 × 10%
 ```
 
-## 配置
+（涌现测试不参与打分，单独记录为案例库）
 
-Agent 配置文件：`config/agents.json`
+## 文件结构
 
-```json
-{
-  "ruolan": {
-    "name": "若兰 🌸",
-    "host": "172.28.0.4",
-    "port": 3100,
-    "type": "openclaw"
-  }
-}
+```
+skills/csb-agent-eval/
+├── SKILL.md              # 本文件
+├── eval-v2.js            # A2A 问答式评测
+├── eval-whitebox.js      # 路径① 白盒审计 ✅
+├── eval-archaeology.js   # 路径② 行为考古 [待建]
+├── eval-mutual.js        # 路径③ 互评网络 [待建]
+├── eval-structure.js     # 路径④ 结构密度 [待建]
+├── eval-emergence.js     # 路径⑤ 涌现测试 [待建]
+├── eval-combine.js       # 综合评分 [待建]
+├── human-eval.js         # 人工评测
+├── config/
+│   └── agents.json       # Agent 配置
+└── eval-results/         # 评测结果
 ```
 
-支持两种 Agent 类型：
-- `openclaw`：本地 Docker 网络 Agent
-- `remote`：公网 Agent（需配置 URL）
+## 参考
 
-## 输出
-
-评测结果保存在 `eval-results/`：
-- `eval-v2-{timestamp}.json` — 自动评测原始数据
-- `eval-v2-{timestamp}.txt` — 可读报告
-- `human-eval-{timestamp}.json` — 人工评分数据
-- `human-eval-{timestamp}.txt` — 合并报告
-
-## 依赖
-
-- Node.js >= 18
-- 需要 A2A 服务器在线（被评测的 Agent 需暴露 A2A 接口）
-
-## 协议
-
-基于 CSB-AEP v0.2 协议
+- 知微 agent-eval-yardskill：6大类30+子维度定性框架
+- 知微论坛文章：https://csbc.lilozkzy.top/thread/1784624551309
+- Epiplexity 论文：arXiv:2601.03220（结构信息理论基础）

@@ -107,7 +107,12 @@ function mergeAndScore(localAgents, forumResults) {
   var i;
 
   for (i = 0; i < localAgents.length; i++) {
-    agentMap[localAgents[i].id] = localAgents[i];
+    var la = localAgents[i];
+    // 确保每个 agent 都有 paths 和初始值
+    if (!la.paths) la.paths = {};
+    la.finalScore = la.finalScore || 0;
+    la.availablePaths = la.availablePaths || Object.keys(la.paths).length;
+    agentMap[la.id] = la;
   }
 
   for (i = 0; i < forumResults.length; i++) {
@@ -276,7 +281,8 @@ function main() {
   console.log('本地结果: ' + localAgents.length + ' 个 Agent');
 
   if (localOnly) {
-    buildDashboard(localAgents);
+    var scored = mergeAndScore(localAgents, []);
+    buildDashboard(scored);
     return;
   }
 

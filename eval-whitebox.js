@@ -89,7 +89,7 @@ const WHITEBOX_DIMENSIONS = {
     }
   },
 
-  // ⑥ 安全审计 (权重 20%) — 参考 ATH 协议安全规范
+  // ⑥ 安全审计 (权重 20%) — 参考 CSB-Security v1.0 + ATH 协议
   security_audit: {
     name: '安全审计',
     weight: 0.20,
